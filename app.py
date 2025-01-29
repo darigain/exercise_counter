@@ -130,8 +130,10 @@ if uploaded_file:
                     current_phase = "down" if (elbow_angle < 90) & (stand_angle > 75) else "up"
                     pushup_count, pushup_phase = count_reps(current_phase, pushup_phase, pushup_count)
 
+            progress_value = min(1.0, max(0.0, frame_count / max(1, total_frames)))  # Prevents division by zero
+            progress_bar.progress(progress_value)
             # Update progress bar
-            progress_bar.progress(frame_count / total_frames)
+            # progress_bar.progress(frame_count / total_frames)
 
             # Store processed frames
             processed_frames.append(image)
