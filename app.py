@@ -70,7 +70,7 @@ if uploaded_file:
 
     # Store processed frames
     processed_frames = []
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))/frame_skip
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)/frame_skip)
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
