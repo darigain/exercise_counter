@@ -46,6 +46,20 @@ def count_reps(current_phase, prev_phase, count):
         return count + 1, current_phase
     return count, current_phase
 
+def fix_video_orientation(frame):
+    """
+    Ensure the video is in vertical orientation by rotating frames if needed.
+    Args:
+        frame (numpy.ndarray): A single video frame.
+    Returns:
+        numpy.ndarray: The rotated (or original) frame.
+    """
+    height, width = frame.shape[:2]
+    if width > height:  # Landscape orientation detected
+        # Rotate the frame 90 degrees counter-clockwise
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE) # COUNTERCLOCKWISE
+    return frame
+
 # Streamlit UI
 st.title("Exercise Counter: Squats & Push-Ups")
 
@@ -84,7 +98,10 @@ if uploaded_file:
                 frame_count += 1
                 continue
             frame_count += 1
-
+            
+            # Fix orientation if needed
+            frame = fix_video_orientation(frame)
+            
             # Resize frame
             # frame = cv2.resize(frame, (480, 640))
             frame = cv2.resize(frame, (240, 426))
