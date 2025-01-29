@@ -71,7 +71,7 @@ if uploaded_file:
 
     # Store processed frames
     processed_frames = []
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)/frame_skip)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
@@ -130,6 +130,14 @@ if uploaded_file:
                                                   [keypoints["RIGHT_ANKLE"][0], keypoints["RIGHT_ANKLE"][1] - 1])
                     current_phase = "down" if (elbow_angle < 90) & (stand_angle > 75) else "up"
                     pushup_count, pushup_phase = count_reps(current_phase, pushup_phase, pushup_count)
+                
+                # Draw exercise type and counts on the frame
+                cv2.putText(image, f"Exercise: {exercise}", (50, 50),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(image, f"Squats: {squat_count} ({squat_phase})", (50, 100),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(image, f"Push-Ups: {pushup_count} ({pushup_phase})", (50, 150),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
 
             progress_value = min(1.0, max(0.0, frame_count / max(1, total_frames)))  # Prevents division by zero
             progress_bar.progress(progress_value)
