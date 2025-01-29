@@ -149,8 +149,9 @@ if uploaded_file:
     # Re-encode the video with FFmpeg
     def reencode_video(input_path, output_path):
         subprocess.run([
-            "ffmpeg", "-i", input_path, "-vcodec", "libx264", "-crf", "28", output_path
+            "ffmpeg", "-y", "-i", input_path, "-vcodec", "libx264", "-crf", "28", output_path
         ])
+
 
     # Save the video and re-encode it
     temp_output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
