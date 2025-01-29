@@ -1,1 +1,5 @@
 streamlit
+opencv-python
+opencv-python-headless  # Only if needed
+mediapipe
+numpy
