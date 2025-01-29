@@ -3,6 +3,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import tempfile
+import subprocess
 
 # Initialize Mediapipe Pose
 mp_pose = mp.solutions.pose
@@ -145,15 +146,25 @@ if uploaded_file:
     st.write(f"**Total Squats:** {squat_count}")
     st.write(f"**Total Push-Ups:** {pushup_count}")
 
-    # Convert processed frames into a video
-    output_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
-    height, width, _ = processed_frames[0].shape
-    out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'mp4v'), 10, (width, height))
+    # Re-encode the video with FFmpeg
+    def reencode_video(input_path, output_path):
+        subprocess.run([
+            "ffmpeg", "-i", input_path, "-vcodec", "libx264", "-crf", "28", output_path
+        ])
 
+    # Save the video and re-encode it
+    temp_output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
+    final_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
+
+    # Save the video using OpenCV
+    height, width, _ = processed_frames[0].shape
+    out = cv2.VideoWriter(temp_output_path, cv2.VideoWriter_fourcc(*'mp4v'), 10, (width, height))
     for frame in processed_frames:
         out.write(frame)
-    
     out.release()
 
-    # Display processed video
-    st.video(output_video_path)
+    # Re-encode with FFmpeg
+    reencode_video(temp_output_path, final_video_path)
+
+    # Display the re-encoded video
+    st.video(final_video_path)
