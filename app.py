@@ -4,6 +4,8 @@ import mediapipe as mp
 import numpy as np
 import tempfile
 import subprocess
+import psycopg2  # NEW FEATURE: Added for database connection using Streamlit secrets
+import datetime  # NEW FEATURE: Added for datetime timestamp
 
 # Initialize Mediapipe Pose
 mp_pose = mp.solutions.pose
@@ -57,11 +59,14 @@ def fix_video_orientation(frame):
     height, width = frame.shape[:2]
     if width > height:  # Landscape orientation detected
         # Rotate the frame 90 degrees counter-clockwise
-        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE) # COUNTERCLOCKWISE
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)  # COUNTERCLOCKWISE
     return frame
 
 # Streamlit UI
 st.title("Exercise Counter: Squats & Push-Ups")
+
+# NEW FEATURE: Username input.
+username = st.text_input("Enter your username:")
 
 # Upload video
 uploaded_file = st.file_uploader("Upload a video file", type=["mp4", "mov", "avi"])
@@ -171,12 +176,40 @@ if uploaded_file:
     st.write(f"**Total Squats:** {squat_count}")
     st.write(f"**Total Push-Ups:** {pushup_count}")
 
+    # NEW FEATURE: Insert record into the database table (username, datetime, squat_count, pushup_count)
+    if username:  # Only insert if username is provided
+        try:
+            # Connect to the database using credentials from Streamlit secrets
+            conn = psycopg2.connect(
+                host=st.secrets["db"]["host"],
+                database=st.secrets["db"]["database"],
+                user=st.secrets["db"]["user"],
+                password=st.secrets["db"]["password"],
+                port=st.secrets["db"]["port"]
+            )
+            cursor = conn.cursor()
+            
+            # Insert record into the table 'exercise_records'
+            insert_query = """
+            INSERT INTO exercise_records (username, datetime, squat_count, pushup_count)
+            VALUES (%s, %s, %s, %s)
+            """
+            current_time = datetime.datetime.now()
+            cursor.execute(insert_query, (username, current_time, squat_count, pushup_count))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            st.success("Record inserted into database successfully!")
+        except Exception as e:
+            st.error(f"Error inserting record into database: {e}")
+    else:
+        st.warning("Username not provided. Record not saved to database.")
+
     # Re-encode the video with FFmpeg
     def reencode_video(input_path, output_path):
         subprocess.run([
             "ffmpeg", "-y", "-i", input_path, "-vcodec", "libx264", "-crf", "28", output_path
         ])
-
 
     # Save the video and re-encode it
     temp_output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
