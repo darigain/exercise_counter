@@ -2,3 +2,4 @@ streamlit
 opencv-python-headless==4.5.5.64  # Stable version without GUI dependencies
 mediapipe
 numpy
+psycopg2-binary
