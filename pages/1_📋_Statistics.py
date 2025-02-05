@@ -31,58 +31,55 @@ def load_data():
         st.error(f"Error retrieving data: {e}")
         return pd.DataFrame()
 
-# Load data from the database.
-df = load_data()
+# Load the full data from the database.
+data_full = load_data()
 
-if df.empty:
+if data_full.empty:
     st.warning("No data found in the database.")
     st.stop()
 
-# Sidebar widgets for filtering
-
-# 1. Drop-down list to filter by user.
-user_options = sorted(df['username'].unique().tolist())
+# Sidebar widget for filtering by user.
+user_options = sorted(data_full['username'].unique().tolist())
 selected_user = st.selectbox("Select a user", ["All Users"] + user_options)
 
+# Filter the data based on the selected user.
 if selected_user != "All Users":
-    df = df[df['username'] == selected_user]
+    df_filtered = data_full[data_full['username'] == selected_user].copy()
+else:
+    df_filtered = data_full.copy()
 
-# 2. Drop-down list for aggregation frequency.
+# Sidebar widget for aggregation frequency.
 frequency = st.selectbox("Select aggregation frequency", ["Daily", "Weekly", "Monthly"])
 
-# Prepare the data for plotting based on selected frequency.
+# Prepare data for plotting based on the selected frequency.
+df_chart = df_filtered.copy()  # Work on a copy so as not to alter the original filtered data.
+
 if frequency == "Daily":
-    # Create a 'date' column from the datetime column.
-    df['date'] = df['datetime'].dt.date
+    df_chart['date'] = df_chart['datetime'].dt.date
     df_grouped = (
-        df.groupby("date")[["squat_count", "pushup_count"]]
-          .sum()
-          .reset_index()
+        df_chart.groupby("date")[["squat_count", "pushup_count"]]
+                .sum()
+                .reset_index()
     )
-    # Convert date back to datetime for consistent plotting.
     df_grouped['date'] = pd.to_datetime(df_grouped['date'])
-    
 elif frequency == "Weekly":
-    # Create a 'week' column corresponding to the start date of the week.
-    df['week'] = df['datetime'].dt.to_period('W').apply(lambda r: r.start_time)
+    df_chart['week'] = df_chart['datetime'].dt.to_period('W').apply(lambda r: r.start_time)
     df_grouped = (
-        df.groupby("week")[["squat_count", "pushup_count"]]
-          .sum()
-          .reset_index()
-          .rename(columns={'week': 'date'})
+        df_chart.groupby("week")[["squat_count", "pushup_count"]]
+                .sum()
+                .reset_index()
+                .rename(columns={'week': 'date'})
     )
-    
 elif frequency == "Monthly":
-    # Create a 'month' column corresponding to the start date of the month.
-    df['month'] = df['datetime'].dt.to_period('M').apply(lambda r: r.start_time)
+    df_chart['month'] = df_chart['datetime'].dt.to_period('M').apply(lambda r: r.start_time)
     df_grouped = (
-        df.groupby("month")[["squat_count", "pushup_count"]]
-          .sum()
-          .reset_index()
-          .rename(columns={'month': 'date'})
+        df_chart.groupby("month")[["squat_count", "pushup_count"]]
+                .sum()
+                .reset_index()
+                .rename(columns={'month': 'date'})
     )
 else:
-    df_grouped = df.copy()
+    df_grouped = df_chart.copy()
 
 # Create an interactive line plot with two lines (one for squat_count, one for pushup_count).
 fig = px.line(
@@ -95,3 +92,13 @@ fig = px.line(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+# --------------------------------------------------------------------------
+# NEW FEATURE: HTML Table "Recent User's Data"
+# --------------------------------------------------------------------------
+st.subheader("Recent User's Data")
+# Sort the filtered data by datetime in descending order.
+df_recent = df_filtered.sort_values(by="datetime", ascending=False)
+# Convert the DataFrame to an HTML table without the default index.
+html_table = df_recent.to_html(index=False, classes="table table-striped")
+st.markdown(html_table, unsafe_allow_html=True)
