@@ -3,3 +3,4 @@ opencv-python-headless==4.7.0.72 # opencv-python-headless==4.5.5.64
 mediapipe
 numpy
 psycopg2-binary
+plotly
