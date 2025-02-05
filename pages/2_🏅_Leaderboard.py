@@ -102,5 +102,6 @@ top100["Rank"] = top100.index + 1
 top100 = top100[["Rank", "username", "total_count", "squat_count", "pushup_count"]]
 
 st.subheader("Top 100 Users Leaderboard")
-# Task 2: Use style.hide_index() to remove the default index column.
-st.dataframe(top100.style.hide_index(), use_container_width=True)
+# Task 2: Render the table as HTML without the default index column.
+html_table = top100.to_html(index=False)
+st.markdown(html_table, unsafe_allow_html=True)
