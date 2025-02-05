@@ -11,7 +11,7 @@ st.title("Leaderboard")
 # ------------------------------
 # TIMEFRAME FILTER SELECTION
 # ------------------------------
-# Exact order: Last 7 days, Last 30 days, All Time (default: Last 7 days)
+# Options in exact order: Last 7 days, Last 30 days, All Time (default: Last 7 days)
 timeframe = st.selectbox(
     "Select Timeframe",
     options=["Last 7 days", "Last 30 days", "All Time"],
@@ -24,7 +24,7 @@ timeframe = st.selectbox(
 @st.cache_data(show_spinner=False)
 def load_data():
     """
-    Connects to the database and loads data from exercise_records into a DataFrame.
+    Connects to the database and loads data from the exercise_records table into a DataFrame.
     """
     try:
         conn = psycopg2.connect(
@@ -43,7 +43,7 @@ def load_data():
         st.error(f"Error retrieving data: {e}")
         return pd.DataFrame()
 
-# Load data from database.
+# Load data from the database.
 df = load_data()
 
 if df.empty:
@@ -70,7 +70,7 @@ agg_df["total_count"] = agg_df["squat_count"] + agg_df["pushup_count"]
 agg_df = agg_df.sort_values(by="total_count", ascending=False)
 
 # ------------------------------
-# VISUALIZATION: TOP 10 USERS BAR CHART
+# VISUALIZATION: TOP 10 USERS HORIZONTAL BAR CHART
 # ------------------------------
 top10 = agg_df.head(10)
 # Melt the data for a stacked bar chart
@@ -89,17 +89,18 @@ fig = px.bar(
     title="Top 10 Users Leaderboard (Stacked Counts)",
     labels={"username": "User", "Count": "Exercise Count"}
 )
+# Task 1: Reverse the y-axis order so that the highest total is at the top.
+fig.update_yaxes(autorange="reversed")
 st.plotly_chart(fig, use_container_width=True)
 
 # ------------------------------
-# TABLE: TOP 100 USERS
+# TABLE: TOP 100 USERS LEADERBOARD
 # ------------------------------
 top100 = agg_df.head(100).copy()
 top100 = top100.reset_index(drop=True)
-top100.index = top100.index + 1  # Ranking starts at 1
-top100 = top100.rename_axis("Rank").reset_index()
-# Rearranging columns: Rank, username, total_count, squat_count, pushup_count
+top100["Rank"] = top100.index + 1
 top100 = top100[["Rank", "username", "total_count", "squat_count", "pushup_count"]]
 
 st.subheader("Top 100 Users Leaderboard")
-st.dataframe(top100)
+# Task 2: Use style.hide_index() to remove the default index column.
+st.dataframe(top100.style.hide_index(), use_container_width=True)
