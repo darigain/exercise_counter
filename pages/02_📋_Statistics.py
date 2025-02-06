@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 import datetime
 
-# @st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner=False)
 def load_data():
     """
     Connect to the database and load exercise_records data into a DataFrame.
