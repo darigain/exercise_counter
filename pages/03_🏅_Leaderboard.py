@@ -35,7 +35,6 @@ st.write("🏆 Champions, you are absolutely crushing it! 🌟")
 
 # Refresh button
 if st.button("Refresh Data"):
-    load_data.clear()        # Clear the cached data
     st.rerun()  # Force a rerun to load fresh data
 
 # Load data from the database.
