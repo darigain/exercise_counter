@@ -8,9 +8,11 @@ import datetime
 
 st.title("Leaderboard")
 
-# Add a refresh button at the top
+st.write("🏆 Champions, you are absolutely crushing it! 🌟")
+
+# Refresh button
 if st.button("Refresh Data"):
-    st.cache_data.clear()  # Clear cached data so next call retrieves fresh data
+    st.experimental_rerun()  # Force a rerun so that new data is loaded.
 
 # ------------------------------
 # TIMEFRAME FILTER SELECTION
