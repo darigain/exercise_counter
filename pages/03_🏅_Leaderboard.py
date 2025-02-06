@@ -8,6 +8,10 @@ import datetime
 
 st.title("Leaderboard")
 
+# Add a refresh button at the top
+if st.button("Refresh Data"):
+    st.cache_data.clear()  # Clear cached data so next call retrieves fresh data
+
 # ------------------------------
 # TIMEFRAME FILTER SELECTION
 # ------------------------------
