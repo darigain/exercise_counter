@@ -7,7 +7,7 @@ import plotly.express as px
 import datetime
 
 st.title("Exercise Statistics")
-
+st.sidebar.write("Sidebar is visible")
 # Refresh button (placed at the top or in the sidebar)
 if st.sidebar.button("Refresh Data"):
     load_data.clear()      # Clear the cached data-loading function.
