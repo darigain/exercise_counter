@@ -6,9 +6,6 @@ import pandas as pd
 import plotly.express as px
 import datetime
 
-st.title("Exercise Statistics")
-st.write("Are you a push-up or squat hero? 🏋️‍♀️💪 Check it out! 🔍")
-
 @st.cache_data(show_spinner=False)
 def load_data():
     """
@@ -32,6 +29,8 @@ def load_data():
         st.error(f"Error retrieving data: {e}")
         return pd.DataFrame()
 
+st.title("Exercise Statistics")
+st.write("Are you a push-up or squat hero? 🏋️‍♀️💪 Check it out! 🔍")
 # ------------------------------
 # Refresh Button (now that load_data is defined)
 # ------------------------------
