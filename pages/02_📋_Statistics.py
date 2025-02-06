@@ -7,10 +7,11 @@ import plotly.express as px
 import datetime
 
 st.title("Exercise Statistics")
-st.sidebar.write("Sidebar is visible")
-# Refresh button (placed at the top or in the sidebar)
-if st.sidebar.button("Refresh Data"):
-    load_data.clear()      # Clear the cached data-loading function.
+
+st.write("Are you a push-up or squat hero? 🏋️‍♀️💪 Check it out! 🔍")
+
+# Refresh button
+if st.button("Refresh Data"):
     st.experimental_rerun()  # Force a rerun so that new data is loaded.
 
 @st.cache_data(show_spinner=False)
