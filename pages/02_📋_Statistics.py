@@ -7,12 +7,7 @@ import plotly.express as px
 import datetime
 
 st.title("Exercise Statistics")
-
 st.write("Are you a push-up or squat hero? 🏋️‍♀️💪 Check it out! 🔍")
-
-# Refresh button
-if st.button("Refresh Data"):
-    st.experimental_rerun()  # Force a rerun so that new data is loaded.
 
 @st.cache_data(show_spinner=False)
 def load_data():
@@ -36,6 +31,13 @@ def load_data():
     except Exception as e:
         st.error(f"Error retrieving data: {e}")
         return pd.DataFrame()
+
+# ------------------------------
+# Refresh Button (now that load_data is defined)
+# ------------------------------
+if st.button("Refresh Data"):
+    load_data.clear()        # Clear the cached data
+    st.experimental_rerun()  # Force a rerun to load fresh data
 
 # Load the full data from the database.
 data_full = load_data()
