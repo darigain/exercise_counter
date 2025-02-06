@@ -6,27 +6,7 @@ import pandas as pd
 import plotly.express as px
 import datetime
 
-st.title("Leaderboard")
-
-st.write("🏆 Champions, you are absolutely crushing it! 🌟")
-
-# Refresh button
-if st.button("Refresh Data"):
-    st.experimental_rerun()  # Force a rerun so that new data is loaded.
-
-# ------------------------------
-# TIMEFRAME FILTER SELECTION
-# ------------------------------
-# Options in exact order: Last 7 days, Last 30 days, All Time (default: Last 7 days)
-timeframe = st.selectbox(
-    "Select Timeframe",
-    options=["Last 7 days", "Last 30 days", "All Time"],
-    index=0
-)
-
-# ------------------------------
 # DATA LOADING FUNCTION
-# ------------------------------
 @st.cache_data(show_spinner=False)
 def load_data():
     """
@@ -49,6 +29,15 @@ def load_data():
         st.error(f"Error retrieving data: {e}")
         return pd.DataFrame()
 
+st.title("Leaderboard")
+
+st.write("🏆 Champions, you are absolutely crushing it! 🌟")
+
+# Refresh button
+if st.button("Refresh Data"):
+    load_data.clear()        # Clear the cached data
+    st.rerun()  # Force a rerun to load fresh data
+
 # Load data from the database.
 df = load_data()
 
@@ -56,6 +45,15 @@ if df.empty:
     st.warning("No data available from the database.")
     st.stop()
 
+# ------------------------------
+# TIMEFRAME FILTER SELECTION
+# ------------------------------
+# Options in exact order: Last 7 days, Last 30 days, All Time (default: Last 7 days)
+timeframe = st.selectbox(
+    "Select Timeframe",
+    options=["Last 7 days", "Last 30 days", "All Time"],
+    index=0
+)
 # ------------------------------
 # APPLY TIMEFRAME FILTER
 # ------------------------------
