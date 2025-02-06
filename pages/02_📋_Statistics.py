@@ -35,6 +35,7 @@ st.write("Are you a push-up or squat hero? 🏋️‍♀️💪 Check it out! �
 # Refresh Button (now that load_data is defined)
 # ------------------------------
 if st.button("Refresh Data"):
+    st.cache_data.clear()
     st.rerun()  # Force a rerun to load fresh data
 
 # Load the full data from the database.
