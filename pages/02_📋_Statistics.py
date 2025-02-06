@@ -8,9 +8,10 @@ import datetime
 
 st.title("Exercise Statistics")
 
-# Place the refresh button in the sidebar for visibility.
+# Refresh button (placed at the top or in the sidebar)
 if st.sidebar.button("Refresh Data"):
-    st.cache_data.clear()  # Clears cached data so that new database entries are loaded.
+    load_data.clear()      # Clear the cached data-loading function.
+    st.experimental_rerun()  # Force a rerun so that new data is loaded.
 
 @st.cache_data(show_spinner=False)
 def load_data():
